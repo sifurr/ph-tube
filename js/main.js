@@ -70,14 +70,6 @@ const secondsToHoursAndMinutesConverter = (seconds = 3670) => {
   }
 };
 
-const hideElement = () => {
-  const timeId = document.getElementById("time-count");
-  const timeText = timeId.innerText;
-  if (timeText === "") {
-    return;
-  }
-  return;
-};
 
 const handlePostByCategory = async (category) => {
   const cardContainer = document.getElementById("cards-holder");
@@ -91,7 +83,7 @@ const handlePostByCategory = async (category) => {
   );
   const resolvedData = await response.json();
   const posts = resolvedData.data;
-  //   console.log("Post: ", posts);
+  // console.log("Post: ", posts);
   cardContainer.textContent = "";
 
   const noDataAvailable = document.getElementById("data-not-available");
@@ -106,12 +98,15 @@ const handlePostByCategory = async (category) => {
     `;
     cardContainer.appendChild(noDataDiv);
   } else {
-    posts.forEach((post) => {
-      noDataAvailable.innerHTML = "";
-      const div = document.createElement("div");
-      //   const time = document.getElementsByClassName("time").style.display = "none";
-      if (post.others.posted_date === "") {
-        div.innerHTML = `
+    let sortBtnState = document.getElementById("sort-by-view").value;
+    if (sortBtnState === "off") {
+      // console.log("sort: >>>", sortBtnState);
+      posts.forEach((post) => {
+        noDataAvailable.innerHTML = "";
+        const div = document.createElement("div");
+        //   const time = document.getElementsByClassName("time").style.display = "none";
+        if (post.others.posted_date === "") {
+          div.innerHTML = `
             <div>
             <!-- card top content -->
             <div class="image-holder h-full w-full relative mb-5">
@@ -149,12 +144,12 @@ const handlePostByCategory = async (category) => {
             </div>
             </div>
         `;
-      } else {
-        // noDataAvailable.innerHTML = "";
-        // const div = document.createElement("div");
-        //   const time = document.getElementsByClassName("time").style.display = "none";
+        } else {
+          // noDataAvailable.innerHTML = "";
+          // const div = document.createElement("div");
+          //   const time = document.getElementsByClassName("time").style.display = "none";
 
-        div.innerHTML = `
+          div.innerHTML = `
             <div>
             <!-- card top content -->
             <div class="image-holder h-full w-full relative mb-5">
@@ -196,11 +191,108 @@ const handlePostByCategory = async (category) => {
             </div>
             </div>
         `;
-      }
-      // end of innerHtml
-      cardContainer.appendChild(div);
-    });
-    // end of for loop
+        }
+        // end of innerHtml
+        cardContainer.appendChild(div);
+      });
+      // end of for loop
+    } else {
+      sortByViews(posts).forEach((post) => {
+        noDataAvailable.innerHTML = "";
+        const div = document.createElement("div");
+        //   const time = document.getElementsByClassName("time").style.display = "none";
+        if (post.others.posted_date === "") {
+          div.innerHTML = `
+            <div>
+            <!-- card top content -->
+            <div class="image-holder h-full w-full relative mb-5">
+                <img src=${
+                  post?.thumbnail
+                } class="rounded-lg h-[212px] w-full object-cover" alt="" />                
+            </div>
+            <!-- card bottom content  -->
+            <div class="flex gap-3 mb-6">
+                <div class="w-10 h-10">
+                <img
+                    class="rounded-full w-full h-10 object-cover"
+                    src="${post.authors[0]?.profile_picture}
+                    alt=""
+                    srcset=""
+                />
+                </div>
+                <div>
+                <a href="#">
+                <h2 class="text-lg font-bold">
+                    ${post?.title}
+                </h2></a>
+                <div class="author-info flex gap-2">
+                    <h3 class="text-color-four text-sm">${
+                      post?.authors[0]?.profile_name
+                    }</h3>
+                    ${
+                      post.authors[0]?.verified ? verifiedAuthor : ""
+                    }                    
+                </div>
+                <p class="text-color-four text-sm">${
+                  post?.others?.views
+                } views</p>
+                </div>
+            </div>
+            </div>
+        `;
+        } else {
+          // noDataAvailable.innerHTML = "";
+          // const div = document.createElement("div");
+          //   const time = document.getElementsByClassName("time").style.display = "none";
+
+          div.innerHTML = `
+            <div>
+            <!-- card top content -->
+            <div class="image-holder h-full w-full relative mb-5">
+                <img src=${
+                  post?.thumbnail
+                } class="rounded-lg h-[212px] w-full object-cover" alt="" />
+                <small id="time-count" class="time absolute right-3 bottom-4 text-[10px] text-white bg-[#171717] px-[6px] py-[4px] rounded-[4px]"
+                > ${secondsToHoursAndMinutesConverter(
+                  post?.others?.posted_date
+                )}</small>
+            </div>
+            <!-- card bottom content  -->
+            <div class="flex gap-3 mb-6">
+                <div class="w-10 h-10">
+                <img
+                    class="rounded-full w-full h-10 object-cover"
+                    src="${post.authors[0]?.profile_picture}
+                    alt=""
+                    srcset=""
+                />
+                </div>
+                <div>
+                <a href="#">
+                <h2 class="text-lg font-bold">
+                    ${post?.title}
+                </h2></a>
+                <div class="author-info flex gap-2">
+                    <h3 class="text-color-four text-sm">${
+                      post?.authors[0]?.profile_name
+                    }</h3>
+                    ${
+                      post.authors[0]?.verified ? verifiedAuthor : ""
+                    }                    
+                </div>
+                <p class="text-color-four text-sm">${
+                  post?.others?.views
+                } views</p>
+                </div>
+            </div>
+            </div>
+        `;
+        }
+        // end of innerHtml
+        cardContainer.appendChild(div);
+      });
+      // end of for loop
+    }
   }
 };
 
