@@ -29,15 +29,15 @@ const verifiedAuthor = `
 `;
 
 const handleCategoryName = async () => {
-    const response = await fetch(
-      `https://openapi.programming-hero.com/api/videos/categories`
-    );
-    const resolvedData = await response.json();
-    categoryAll.innerText = resolvedData.data[0].category;
-    categoryMusic.innerText = resolvedData.data[1].category;
-    categoryComedy.innerText = resolvedData.data[2].category;
-    categoryDrawing.innerText = resolvedData.data[3].category;
-  };
+  const response = await fetch(
+    `https://openapi.programming-hero.com/api/videos/categories`
+  );
+  const resolvedData = await response.json();
+  categoryAll.innerText = resolvedData.data[0].category;
+  categoryMusic.innerText = resolvedData.data[1].category;
+  categoryComedy.innerText = resolvedData.data[2].category;
+  categoryDrawing.innerText = resolvedData.data[3].category;
+};
 
 const getCategoryId = (categoryName) => {
   return categoryName;
@@ -55,6 +55,29 @@ const setCategoryId = (categoryName) => {
   return categoryId;
 };
 
+const secondsToHoursAndMinutesConverter = (seconds = 3670) => {
+  // 3670 = 1 hour 1 minute
+  if (isNaN(seconds)) {
+    return "";
+  } else {
+    const hours = parseInt(seconds / 3600);
+    const minutes = parseInt((3670 % 3600) / 60);
+    if (hours >= 1 && minutes >= 1) {
+      return hours + "hrs " + minutes + " min ago";
+    } else {
+      return "";
+    }
+  }
+};
+
+const hideElement = () => {
+  const timeId = document.getElementById("time-count");
+  const timeText = timeId.innerText;
+  if (timeText === "") {
+    return;
+  }
+  return;
+};
 
 const handlePostByCategory = async (category) => {
   const cardContainer = document.getElementById("cards-holder");
@@ -86,17 +109,15 @@ const handlePostByCategory = async (category) => {
     posts.forEach((post) => {
       noDataAvailable.innerHTML = "";
       const div = document.createElement("div");
-
-      div.innerHTML = `
+      //   const time = document.getElementsByClassName("time").style.display = "none";
+      if (post.others.posted_date === "") {
+        div.innerHTML = `
             <div>
             <!-- card top content -->
             <div class="image-holder h-full w-full relative mb-5">
                 <img src=${
                   post?.thumbnail
-                } class="rounded-lg h-[212px] w-full object-cover" alt="" />
-                <small
-                class="time absolute right-3 bottom-4 text-[10px] text-white bg-[#171717] px-[6px] py-[4px] rounded-[4px]"
-                >3hrs 56 min ago</small>
+                } class="rounded-lg h-[212px] w-full object-cover" alt="" />                
             </div>
             <!-- card bottom content  -->
             <div class="flex gap-3 mb-6">
@@ -109,9 +130,10 @@ const handlePostByCategory = async (category) => {
                 />
                 </div>
                 <div>
+                <a href="#">
                 <h2 class="text-lg font-bold">
                     ${post?.title}
-                </h2>
+                </h2></a>
                 <div class="author-info flex gap-2">
                     <h3 class="text-color-four text-sm">${
                       post?.authors[0]?.profile_name
@@ -120,13 +142,65 @@ const handlePostByCategory = async (category) => {
                       post.authors[0]?.verified ? verifiedAuthor : ""
                     }                    
                 </div>
-                <p class="text-color-four text-sm">91K views</p>
+                <p class="text-color-four text-sm">${
+                  post?.others?.views
+                } views</p>
                 </div>
             </div>
             </div>
         `;
+      } else {
+        // noDataAvailable.innerHTML = "";
+        // const div = document.createElement("div");
+        //   const time = document.getElementsByClassName("time").style.display = "none";
+
+        div.innerHTML = `
+            <div>
+            <!-- card top content -->
+            <div class="image-holder h-full w-full relative mb-5">
+                <img src=${
+                  post?.thumbnail
+                } class="rounded-lg h-[212px] w-full object-cover" alt="" />
+                <small id="time-count" class="time absolute right-3 bottom-4 text-[10px] text-white bg-[#171717] px-[6px] py-[4px] rounded-[4px]"
+                > ${secondsToHoursAndMinutesConverter(
+                  post?.others?.posted_date
+                )}</small>
+            </div>
+            <!-- card bottom content  -->
+            <div class="flex gap-3 mb-6">
+                <div class="w-10 h-10">
+                <img
+                    class="rounded-full w-full h-10 object-cover"
+                    src="${post.authors[0]?.profile_picture}
+                    alt=""
+                    srcset=""
+                />
+                </div>
+                <div>
+                <a href="#">
+                <h2 class="text-lg font-bold">
+                    ${post?.title}
+                </h2></a>
+                <div class="author-info flex gap-2">
+                    <h3 class="text-color-four text-sm">${
+                      post?.authors[0]?.profile_name
+                    }</h3>
+                    ${
+                      post.authors[0]?.verified ? verifiedAuthor : ""
+                    }                    
+                </div>
+                <p class="text-color-four text-sm">${
+                  post?.others?.views
+                } views</p>
+                </div>
+            </div>
+            </div>
+        `;
+      }
+      // end of innerHtml
       cardContainer.appendChild(div);
     });
+    // end of for loop
   }
 };
 
